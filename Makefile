@@ -1,35 +1,30 @@
-SOURCE_DIR = .
-BINARY_DIR = bin
-COMMAND_DIR = cmd
-
-SOURCES = $(shell find $(SOURCE_DIR) -name "*.go")
-BINARIES = $(addprefix $(BINARY_DIR)/,$(shell ls $(COMMAND_DIR)))
-
 .PHONY: all
-all: $(BINARIES)
+all: binaries
 
 .PHONY: test
 test:
 	go test -coverprofile=coverage.out ./...
 
-# Build binary with option to provide GOFLAGS and LDFLAGS
-bin/%: goflags = $(if $(GOFLAGS),$(GOFLAGS),)
-bin/%: ldflags = $(if $(LDFLAGS),-ldflags '$(LDFLAGS)',)
-bin/%: cmd/% $(SOURCES)
-	CGO_ENABLED=1 go build $(goflags) $(ldflags) -o "$@" "./$<"
+include build/01-builder/Makefile
 
 .PHONY: clean
 clean:
 	rm -f $(BINARIES)
-	docker image prune
+	docker image prune -f
 
-.PHONY: docker
-docker:
-	docker build -f build/local-test/Dockerfile -t ghcr.io/wyvernzora/telegraf-pihole-local-test:dev .
+.PHONY: build
+build:
+	./scripts/build.sh
 
 .PHONY: run
 run:
 	docker run --rm \
-		--name pylon \
+		--name pihole-telegraf \
 		-v $(PWD)/etc/pihole:/etc/pihole:ro \
-		ghcr.io/wyvernzora/telegraf-pihole-local-test:dev
+		-v $(PWD)/etc/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf \
+		-v $(PWD)/etc/telegraf-pihole.conf:/etc/telegraf-pihole.conf \
+		ghcr.io/wyvernzora/telegraf-pihole-telegraf:dev
+
+.PHONY: copy-from-k8s
+copy-from-k8s:
+	./etc/pihole/download-from-k8s.sh

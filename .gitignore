@@ -3,5 +3,5 @@
 .deps
 .envrc
 bin/
-etc/
+private
 coverage.out
