@@ -7,7 +7,7 @@ ADD . /app
 ADD build/Makefile /app
 RUN go mod download && go mod verify
 RUN --mount=type=cache,target=/root/.cache/go-build \
-    make binaries LDFLAGS='-s -w -linkmode external -extldflags "-static"'
+    make test && make binaries LDFLAGS='-s -w -linkmode external -extldflags "-static"'
 
 FROM telegraf:alpine
 WORKDIR /plugins

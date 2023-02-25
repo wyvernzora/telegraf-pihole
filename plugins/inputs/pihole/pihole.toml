@@ -2,7 +2,7 @@
 
 # Root directory of the Pihole configuration
 # In vast majority of cases it is /etc/pihole
-pihole_config_root = "/etc/pihole"
+# pihole_config_root = "/etc/pihole"
 
 # Upper limit on the number of log entries to gather in a single polling cycle
 # When starting a fresh plugin instance on an existing database, having a batch limit larger than
@@ -15,15 +15,15 @@ pihole_config_root = "/etc/pihole"
 #
 # When lag metric is too large (> 60s + poll_interval), increase telegraf buffer size, batch size and this
 # config option.
-batch_size_limit = 5000
+# batch_size_limit = 5000
 
 # Set to true to gather Pihole query logs
-gather_query_logs = true
+# gather_query_logs = true
 
 # Set to true to gather Pihole adlist metrics
-gather_adlist_metrics = true
+# gather_adlist_metrics = true
 
 # Set to true to gather metrics about this plugin
 # Publishes a lag metric that is important in detecting when Pihole is generating more logs than telegraf
 # can process.
-gather_plugin_metrics = true
+# gather_plugin_metrics = true

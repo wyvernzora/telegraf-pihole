@@ -1,9 +1,7 @@
 package pihole
 
 import (
-	"database/sql"
 	"github.com/influxdata/telegraf"
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/wyvernzora/telegraf-pihole/pkg/pihole/ftl"
 	"path"
 	"time"
@@ -14,7 +12,7 @@ func (p *Pihole) gatherQueryLogs(a telegraf.Accumulator) (err error) {
 		return nil
 	}
 
-	db, err := sql.Open("sqlite3", path.Join(p.PiholeConfigRoot, "pihole-FTL.db")+"?mode=ro")
+	db, err := p.openDatabase(path.Join(p.PiholeConfigRoot, "pihole-FTL.db"))
 	if err != nil {
 		return
 	}
@@ -28,23 +26,37 @@ func (p *Pihole) gatherQueryLogs(a telegraf.Accumulator) (err error) {
 	}
 
 	for i := 0; i < n; i++ {
-		query := buffer[i]
-		a.AddFields("query_log", map[string]interface{}{
-			"reply_time": query.ReplyTime.Milliseconds(),
-		}, map[string]string{
-			"type":       query.Type.String(),
-			"decision":   query.Decision.String(),
-			"domain":     query.Domain,
-			"client":     query.Client,
-			"forward":    query.Forward,
-			"reply_type": query.ReplyType.String(),
-			"dnssec":     query.DnsSecStatus.String(),
-		}, enhanceQueryTimestamp(query))
+		writeQueryLogEntry(a, buffer[i])
 	}
 	p.position = reader.Position()
 	p.Log.Infof("Processed %d queries; reader position is at %d", n, reader.Position())
 
+	if p.GatherPluginMetrics {
+		var lag = 0 * time.Millisecond
+		if n > 0 {
+			lag = time.Now().Sub(buffer[n-1].Timestamp)
+		}
+		a.AddFields("telegraf_pihole", map[string]interface{}{
+			"lag":   lag.Milliseconds(),
+			"count": n,
+		}, map[string]string{})
+	}
+
 	return nil
+}
+
+func writeQueryLogEntry(a telegraf.Accumulator, query ftl.Query) {
+	a.AddFields("query_log", map[string]interface{}{
+		"reply_time": query.ReplyTime.Milliseconds(),
+	}, map[string]string{
+		"type":       query.Type.String(),
+		"decision":   query.Decision.String(),
+		"domain":     query.Domain,
+		"client":     query.Client,
+		"forward":    query.Forward,
+		"reply_type": query.ReplyType.String(),
+		"dnssec":     query.DnsSecStatus.String(),
+	}, enhanceQueryTimestamp(query))
 }
 
 // enhanceQueryTimestamp artificially increases timestamp resolution by combining it with ID.

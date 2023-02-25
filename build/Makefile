@@ -9,6 +9,10 @@ BINARIES = $(addprefix $(BINARY_DIR)/,$(shell ls $(COMMAND_DIR)))
 .PHONY: binaries
 binaries: $(BINARIES)
 
+.PHONY: test
+test:
+	go test -coverprofile=coverage.out ./...
+
 # Build binary with option to provide GOFLAGS and LDFLAGS
 bin/%: goflags = $(if $(GOFLAGS),$(GOFLAGS),)
 bin/%: ldflags = $(if $(LDFLAGS),-ldflags '$(LDFLAGS)',)
