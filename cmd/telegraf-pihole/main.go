@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-var pollInterval = flag.Duration("poll_interval", 5*time.Second, "how often to poll for metrics")
+var pollInterval = flag.Duration("poll_interval", 60*time.Second, "how often to poll for metrics")
 var pollIntervalDisabled = flag.Bool(
 	"poll_interval_disabled",
 	false,
