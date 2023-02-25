@@ -36,7 +36,7 @@ func (p *Pihole) gatherQueryLogs(a telegraf.Accumulator) (err error) {
 		if n > 0 {
 			lag = time.Now().Sub(buffer[n-1].Timestamp)
 		}
-		a.AddFields("telegraf_pihole", map[string]interface{}{
+		a.AddFields("pihole_plugin", map[string]interface{}{
 			"lag":   lag.Milliseconds(),
 			"count": n,
 		}, map[string]string{})
@@ -51,6 +51,7 @@ func writeQueryLogEntry(a telegraf.Accumulator, query ftl.Query) {
 	}, map[string]string{
 		"type":       query.Type.String(),
 		"decision":   query.Decision.String(),
+		"reason":     query.Reason.String(),
 		"domain":     query.Domain,
 		"client":     query.Client,
 		"forward":    query.Forward,

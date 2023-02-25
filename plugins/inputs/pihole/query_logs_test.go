@@ -69,7 +69,7 @@ func Test_gatherQueryLogs_ReadQueryLog(t *testing.T) {
 
 	assert.NilError(t, err)
 	assert.Equal(t, acc.HasMeasurement("query_log"), true)
-	assert.Equal(t, acc.HasMeasurement("telegraf_pihole"), false)
+	assert.Equal(t, acc.HasMeasurement("pihole_plugin"), false)
 }
 
 func Test_gatherQueryLogs_PluginMetrics(t *testing.T) {
@@ -91,7 +91,7 @@ func Test_gatherQueryLogs_PluginMetrics(t *testing.T) {
 
 	assert.NilError(t, err)
 	assert.Equal(t, acc.HasMeasurement("query_log"), true)
-	assert.Equal(t, acc.HasMeasurement("telegraf_pihole"), true)
+	assert.Equal(t, acc.HasMeasurement("pihole_plugin"), true)
 }
 
 func Test_gatherQueryLogs_PluginMetricsZeroResults(t *testing.T) {
@@ -112,5 +112,5 @@ func Test_gatherQueryLogs_PluginMetricsZeroResults(t *testing.T) {
 
 	assert.NilError(t, err)
 	assert.Equal(t, acc.HasMeasurement("query_log"), false)
-	assert.Equal(t, acc.HasMeasurement("telegraf_pihole"), true)
+	assert.Equal(t, acc.HasMeasurement("pihole_plugin"), true)
 }
