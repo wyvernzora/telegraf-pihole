@@ -5,7 +5,8 @@ all: binaries
 test:
 	go test -coverprofile=coverage.out ./...
 
-include build/01-builder/Makefile
+include build/Makefile
+include test/Makefile
 
 .PHONY: clean
 clean:
@@ -14,16 +15,9 @@ clean:
 
 .PHONY: build
 build:
-	./scripts/build.sh
+	docker build -f build/Dockerfile -t ghcr.io/wyvernzora/telegraf-pihole:dev .
 
-.PHONY: run
-run:
-	docker run --rm \
-		--name pihole-telegraf \
-		-v $(PWD)/etc/pihole:/etc/pihole:ro \
-		-v $(PWD)/etc/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf \
-		-v $(PWD)/etc/telegraf-pihole.conf:/etc/telegraf-pihole.conf \
-		ghcr.io/wyvernzora/telegraf-pihole-telegraf:dev
+
 
 .PHONY: copy-from-k8s
 copy-from-k8s:
