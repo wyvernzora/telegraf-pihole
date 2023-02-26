@@ -7,6 +7,7 @@ import (
 	"github.com/influxdata/telegraf/filter"
 	"github.com/influxdata/telegraf/plugins/inputs"
 	_ "github.com/mattn/go-sqlite3"
+	"time"
 )
 
 //go:embed pihole.toml
@@ -59,6 +60,7 @@ func (p *Pihole) Description() string {
 
 func (p *Pihole) Gather(a telegraf.Accumulator) (err error) {
 	p.Log.Info("Starting metrics gathering cycle")
+	a.SetPrecision(time.Millisecond)
 	if err = p.gatherQueryLogs(a); err != nil {
 		return
 	}
