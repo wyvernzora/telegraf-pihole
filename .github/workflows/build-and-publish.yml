@@ -32,9 +32,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            # Tagged releases
             type=ref,event=tag
-            # Edge versions
             type=edge,branch=master
 
       - name: Build and push image
@@ -43,5 +41,5 @@ jobs:
           context: .
           file: build/Dockerfile
           push: true
-          tags: ${{ steps.meta.plugin.tags }}
-          labels: ${{ steps.meta.plugin.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
